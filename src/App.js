@@ -1,15 +1,35 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import Routing from './Rutas/Routing';
 import { ToastContainer } from "react-toastify";
+import { AuthContext } from './utils/context';
+import {isUserLoggedApi} from "./api/auth";
 import './App.scss';
+
 
 
 export default function App() {
   
+  const[user, setUser]=useState(null);
+  const [refreshCheckLogin, setRefreshCheckLogin] = useState(false);
+
+  useEffect(() => {
+    setUser(isUserLoggedApi());
+    setRefreshCheckLogin(false);
+  }, [refreshCheckLogin])
+
+
   return (
-    <>
-  <Routing/>
-  <ToastContainer
+    <AuthContext.Provider value={user}>
+    {user ? 
+    (
+      <Routing setRefreshCheckLogin={setRefreshCheckLogin}/>
+    )
+    :
+    (
+        <h2>Pagina de login</h2>
+    )
+    }
+    <ToastContainer
         position="top-right"
         autoClose={5000}
         hideProgressBar
@@ -20,7 +40,6 @@ export default function App() {
         draggable
         pauseOnHover
     />
-  </>
+    </AuthContext.Provider>
   );
 }
-
